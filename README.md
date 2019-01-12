@@ -1,2 +1,4 @@
 # learning-aid-for-autism
-it is a calculator for students suffering from autism
+It is a calculator for students suffering from autism.
+Autism also known as ASD (Autism Spectrum Disorder) is a development disorder/disability characterized by challenges with social skills, repetitive behaviour, speech and nonverbal communications.
+The aim of this Assistive device  is to make the kids suffering from autism learn simple arithmetic operations. This device is intended to help  kids for improving their learning abilities in a simplest way. It is a board consisting two sets of numerical input accompanied by a push button and led respectively. Each set consist of numerical 0-9 and a separate operations button for addition, subtraction, multiplication and division. Whenever a desire operation is selected, an output is shown in the form of an LED and voice output using text to speech  for each operation and input buttons selected and will be displayed on an LED screen and using lcd's. In this manner kids can learn some basic arithmetic in a simplest and easy manner.
