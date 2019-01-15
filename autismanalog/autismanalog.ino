@@ -1,8 +1,20 @@
 
+#include <LiquidCrystal_I2C.h>
+
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+
+// it is a calculator  which helps  students suffering from autism to perform single digit calculations
+//bs is state of row one buttons
+//bs1 states of operations
+// bs2 states of row two buttons
+//state1-state of equal steate 2-state of reset
+//a- first digit,b-second digit
 int bs[]={0,0,0,0,0,0,0,0,0,0};
 int bs1[]={0,0,0,0};
 int bs2[]={0,0,0,0,0,0,0,0,0,0};
-int a,bb,d,e,f,c,fl=0,i,f1=0,f2=0,f3=0;
+int a,bb,e,f,c,i,neg,dot,d,x;
+float h;
 
 int b[10],l[10],b1[10],l1[10],b2[10],l2[10],l3[10],l4[10];
 
@@ -12,11 +24,11 @@ int value2=0;
 int value1=1023;
 
 int equal;
-int state1;
-int state2;
+int state1=0;
+int state2=0;
 int reset;
-int on1,on2,on3;
-int neg;
+
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -125,27 +137,39 @@ l4[9]=49;
 
 neg=50;
 
+dot=1;
 
 
+for(int i=0;i<10;i++)
+pinMode(b[i],INPUT);
 
-pinMode(3,INPUT);
-pinMode(4,INPUT);
-pinMode(5,INPUT);
-pinMode(6,INPUT);
-pinMode(9,OUTPUT);
-pinMode(10,OUTPUT);
-pinMode(11,OUTPUT);
-pinMode(46,OUTPUT);
-pinMode(47,OUTPUT);
-pinMode(47,OUTPUT);
-pinMode(48,OUTPUT);
-pinMode(49,OUTPUT);
-pinMode(50,OUTPUT);
-pinMode(51,OUTPUT);
-pinMode(A15,INPUT);
-pinMode(53,INPUT);
-pinMode(52,INPUT);
-Serial.begin(9600);
+
+for(int i=0;i<10;i++)
+pinMode(b2[i],INPUT);
+
+for(int i=0;i<10;i++)
+pinMode(l3[i],OUTPUT);
+
+
+for(int i=0;i<10;i++)
+pinMode(l4[i],OUTPUT);
+
+for(int i=0;i<10;i++)
+pinMode(l3[i],OUTPUT);
+
+pinMode(dot,OUTPUT);
+pinMode(neg,OUTPUT);
+
+for(int i=0;i<4;i++)
+pinMode(b1[i],INPUT);
+
+pinMode(equal,INPUT);
+pinMode(reset,INPUT);
+  Serial.begin(9600);
+  lcd.begin();
+      lcd.print("Lets calculate!");
+  // Turn on the blacklight and print a message.
+  lcd.backlight();
 }
 
 void loop() {
@@ -164,9 +188,11 @@ if(i%2==0)
 digitalWrite(l[i],HIGH);
 
 //Serial.println("buton1 presed");
-f1=1;
+//f1=1;
 a=i;
-on1=i;
+lcd.setCursor(0,0);
+lcd.print("First number : ");
+lcd.print(a);
 Serial.print("first value=");
 Serial.println(a);
 //Serial.println("   ########################################");
@@ -176,11 +202,13 @@ else if(bs[i]==value2)
 {
 
 digitalWrite(l[i],HIGH);
-
+lcd.setCursor(0,0);
+lcd.print("First number : ");
+lcd.print(a);
 //Serial.println("buton1 presed");
-f1=1;
+
 a=i;
-on1=i;
+
 Serial.print("first value=");
 Serial.println(a);
 //Serial.println(flag);
@@ -207,8 +235,9 @@ c=0;
 //Serial.println(c);
 //Serial.println("buton2 presed");
 Serial.print("operation selected=");
-f2=1;
-on2=0;
+lcd.setCursor(0,1);
+lcd.print("Operation : ");
+lcd.print("+ ");
 Serial.println("+");
 //Serial.println(flag);
 }
@@ -222,8 +251,9 @@ c=1;
 //Serial.println(c);
 //Serial.println("buton2 presed");
 Serial.print("operation selected=");
-f2=1;
-on2=1;
+lcd.setCursor(0,1);
+lcd.print("Operation : ");
+lcd.print("-");
 Serial.println("-");
 //Serial.println(flag);
 }
@@ -237,8 +267,9 @@ c=2;
 //Serial.println(c);
 //Serial.println("buton2 presed");
 Serial.print("operation selected=");
-f2=1;
-on2=2;
+lcd.setCursor(0,1);
+lcd.print("Operation : ");
+lcd.print("* ");
 Serial.println("*");
 //Serial.println(flag);
 }
@@ -251,8 +282,9 @@ c=3;
 //Serial.println(c);
 //Serial.println("buton2 presed");
 Serial.print("operation selected=");
-f2=1;
-on2=3;
+lcd.setCursor(0,1);
+lcd.print("Operation : ");
+lcd.print("/");
 Serial.println("/");
 //Serial.println(flag);
 }
@@ -274,12 +306,14 @@ if(i%2==0)
   {
 digitalWrite(l2[i],HIGH);
 bb=i;
-f3=1;
-on3=i;
+
 //Serial.println(bb);
 //Serial.println("buton3 presed");
 Serial.print("second value=");
 Serial.println(bb);
+lcd.setCursor(0,2);
+lcd.print("Second number: ");
+lcd.print(bb);
 break;
 //Serial.println(flag);
   }}
@@ -287,8 +321,9 @@ break;
   {
     digitalWrite(l2[i],HIGH);
 bb=i;
-f3=1;
-on3=i;
+lcd.setCursor(0,2);
+lcd.print("Second number: ");
+lcd.print(bb);
 //Serial.println(bb);
 //Serial.println("buton3 presed");
 Serial.print("second value=");
@@ -302,16 +337,24 @@ Serial.println(bb);
 state1=analogRead(equal);
 if(state1==value2)
 {
-  //Serial.println("#################################duller############################");
-  f1=0;f2=0;f3=0;
-  // Serial.println("#################################007############################");
-  
+ 
 switch(c){
-  case 0:
+ case 0:
   {
     d=a+bb;
   Serial.print("sum=");
   Serial.println(d);
+  lcd.setCursor(0,1);
+  lcd.clear();
+lcd.print("Sum of number:");
+lcd.print(d);
+  e=d/10;
+f=d%10;
+
+
+digitalWrite(l3[e],HIGH);
+
+digitalWrite(l4[f],HIGH);
   
 break;
 
@@ -322,8 +365,26 @@ case 1:
     d=a-bb;
   Serial.print("difference=");
   Serial.println(d);
-break;
+  lcd.setCursor(0,1);
+lcd.print("Difference number:");
 
+
+if(d<0)
+{
+  d=-d;
+  digitalWrite(neg,HIGH);
+  lcd.print(d);
+}
+lcd.print(d);
+
+  e=d/10;
+f=d%10;
+
+
+digitalWrite(l3[e],HIGH);
+
+digitalWrite(l4[f],HIGH);
+break;
   }
 
 case 2:
@@ -331,47 +392,62 @@ case 2:
     d=a*bb;
   Serial.print("product=");
   Serial.println(d);
-break;
-
-  }
-
-case 3:
-  {
-    d=a/bb;
-  Serial.print("quotient=");
-  Serial.println(d);
-break;
-
-  }
+  lcd.setCursor(0,1);
+  lcd.clear();
+lcd.print("Product of number:");
+lcd.print(d);
   
-}
-
-if(d<0)
-{
-  d=-d;
-  digitalWrite(neg,HIGH);
-}
-e=d/10;
+  e=d/10;
 f=d%10;
 
 
 digitalWrite(l3[e],HIGH);
 
 digitalWrite(l4[f],HIGH);
+break;
+  }
+case 3:
+  {
+    h=(float)a/bb;
+  Serial.print("quotient=");
+  digitalWrite(dot,HIGH);
+  Serial.println(h);
+    lcd.setCursor(0,1);
+  lcd.clear();
+lcd.print("Quotient of number:");
+lcd.print(h);
+  
+  d=h*10;
+  e=d/10;
+f=(d)%10;
 
 
+digitalWrite(l3[e],HIGH);
+
+digitalWrite(l4[f],HIGH);
+break;
+  }
 
 
+}  
+ 
 }
 state2=analogRead(reset);
 if(state2==value1)
 {
-  digitalWrite(l[on1],LOW);
-  digitalWrite(l1[on2],LOW);
-  digitalWrite(l2[on3],LOW);
-  digitalWrite(l3[e],LOW);
-  digitalWrite(l4[f],LOW);
+  for(i=0;i<10;i++)
+ {
+  digitalWrite(l3[i],LOW);
+  digitalWrite(l4[i],LOW);
+  digitalWrite(dot,LOW);
   digitalWrite(neg,LOW);
+ }
+  
+
+ 
+     lcd.setCursor(0,1);
+  lcd.clear();
+lcd.print("Lets Calculate!");
 }
 
 
@@ -382,31 +458,6 @@ if(state2==value1)
 
 
   
-/*
 
-
-b2=digitalRead(5);
-if(b2==HIGH)
-digitalWrite(6,HIGH);
-
-
-
-
-b3=digitalRead(7);
-if(b3==HIGH)
-digitalWrite(8,HIGH);
-
-
-
-
-b4=digitalRead(9);
-if(b4==HIGH)
-digitalWrite(10,HIGH);
-
-
-
-
-
-*/
 
 

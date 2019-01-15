@@ -334,11 +334,12 @@ if(state2==HIGH)
   digitalWrite(l4[i],LOW);
   digitalWrite(dot,LOW);
   digitalWrite(neg,LOW);
+ }
   x=25;
   Serial.write(x);
   
 
- }
+ 
      lcd.setCursor(0,1);
   lcd.clear();
 lcd.print("Lets Calculate!");
